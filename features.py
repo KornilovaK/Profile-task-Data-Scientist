@@ -63,7 +63,7 @@ def fill_df(features, df, feat_cols):
     for i in range(df.shape[0]):
         if df.loc[i, feat_cols].sum() == 0:
             df = df.drop(i)
-    
+    print("all")
     return df
 
 
