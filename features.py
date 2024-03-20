@@ -16,7 +16,7 @@ def init_features(root: str) -> None:
     train = fill_df(features, train, feat_cols)
     test = fill_df(features, test, feat_cols)
 
-    save_new_data(train, test)
+    save_new_data(root, train, test)
 
 
 def prepare_df(train: pd.DataFrame, test: pd.DataFrame, features: pd.DataFrame,
@@ -74,7 +74,7 @@ def fill_df(features: pd.DataFrame, df: pd.DataFrame,
     return df
 
 
-def save_new_data(train: pd.DataFrame, test: pd.DataFrame) -> None:
+def save_new_data(root: str, train: pd.DataFrame, test: pd.DataFrame) -> None:
     train.drop(["id"], axis=1).to_csv(os.path.join(root, "train_features.csv"))
 
     test.drop(["id"], axis=1).to_csv(os.path.join(root, "test_features.csv"))

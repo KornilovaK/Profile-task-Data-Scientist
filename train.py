@@ -12,6 +12,25 @@ from features import init_features
 data_root = 'Profile-task-Data-Scientist/data'
 model_root = 'Profile-task-Data-Scientist/models'
 
+def init() -> None:
+    
+    try:
+        train_features = pd.read_csv(os.path.join(data_root, 'train_features.csv'))
+        test_features = pd.read_csv(os.path.join(data_root, 'test_features.csv'))
+        test_ids = pd.read_csv(os.path.join(data_root, 'test_ids.csv'))
+    except:
+        init_features(data_root)
+    
+    
+    X_train, y_train, X_val, y_val, \
+             X_test, test_ids = prepare_data(train_features,
+                                             test_features, test_ids
+                                            )
+
+    train_lgb_reg(X_train, X_val, y_train, y_val)
+    train_lgb(X_train, X_val, y_train, y_val)
+    predict(X_val, y_val, X_test, test_ids)
+
 
 def prepare_data(train_features: pd.DataFrame,
                  test_features: pd.DataFrame,
@@ -30,27 +49,6 @@ def prepare_data(train_features: pd.DataFrame,
     X_test = scaler.transform(X_test)
     
     return X_train, y_train, X_val, y_val, X_test, test_ids
-
-
-def init() -> None:
-    init_features(data_root)
-
-    try:
-        train_features = pd.read_csv(os.path.join(data_root, 'train_features.csv'))
-        test_features = pd.read_csv(os.path.join(data_root, 'test_features.csv'))
-        test_ids = pd.read_csv(os.path.join(data_root, 'test_ids.csv'))
-    except:
-        init_features(data_root)
-    
-    
-    X_train, y_train, X_val, y_val, \
-             X_test, test_ids = prepare_data(train_features,
-                                             test_features, test_ids
-                                            )
-
-    train_lgb_reg(X_train, X_val, y_train, y_val)
-    train_lgb(X_train, X_val, y_train, y_val)
-    predict(X_val, y_val, X_test, test_ids)
 
 
 def train_lgb_reg(X_train: np.ndarray, X_val: np.ndarray,
@@ -115,7 +113,7 @@ def predict(X_val: np.ndarray, y_val: pd.DataFrame,
 
     preds = (lgb_pred + bst_pred) / 2
 
-    pd.DataFrame({'id': test_ids.id, 'score': preds}).to_csv(os.path.join(data_root, "submission.csv"))
+    pd.DataFrame({'id': test_ids.id, 'score': preds}).to_csv(os.path.join(data_root, "submission.csv"), index=False)
 
 
 if __name__ == '__main__':
